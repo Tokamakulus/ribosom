@@ -1019,7 +1019,7 @@ def calc_dG_pre_post_RBS(pre_list,post_list,RBS_list,name_list,output,verbose = 
             elif key == "energy_cutoff":
                 test.energy_cutoff = value
             elif key == "standby_site_length":
-                test.standby_sitRBSe_length = value
+                test.standby_site_length = value
             elif key == "dangles":
                 test.dangles = value
             elif key == "export_PDF":
