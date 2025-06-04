@@ -67,9 +67,9 @@ def run():
     return (True,output_string)
 
 def ReadOutput(output):
-    import stringIO
+    from io import StringIO
 
-    handle = stringIO.stringIO(output)
+    handle = StringIO(output)
 
     for line in handle.readlines():
         if line == "Program Executed":
