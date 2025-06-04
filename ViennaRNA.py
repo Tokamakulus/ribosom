@@ -1,4 +1,4 @@
-#Python wrapper for the Vienna RNA Package by Andreas R. Gruber, Ronny Lorenz, Stephan H. Bernhart, Richard Neuböck, and Ivo L. Hofacker (NAR, 2008).
+#Python wrapper for the Vienna RNA Package by Andreas R. Gruber, Ronny Lorenz, Stephan H. Bernhart, Richard NeubÃ¶ck, and Ivo L. Hofacker (NAR, 2008).
 
 #This file is part of the Ribosome Binding Site Calculator.
 
@@ -95,7 +95,7 @@ class ViennaRNA(dict):
             except:
                 break
 
-        if debug == 1: print output.fromchild.read()
+        if debug == 1: print(output.fromchild.read())
 
         #Skip the unnecessary output lines
         line = output.fromchild.readline()
@@ -158,7 +158,7 @@ class ViennaRNA(dict):
                 break
 
         #print output.fromchild.read()
-        if debug == 1: print output.fromchild.read()
+        if debug == 1: print(output.fromchild.read())
 
         #Skip unnecessary line
         line = output.fromchild.readline()
@@ -280,10 +280,10 @@ class ViennaRNA(dict):
                 num_strands+=1
 
             else:
-                print "Error! Invalid character in bracket notation."
+                print("Error! Invalid character in bracket notation.")
 
         if len(last_nt_x_list) > 0:
-            print "Error! Leftover unpaired nucleotides when converting from bracket notation to numbered base pairs."
+            print("Error! Leftover unpaired nucleotides when converting from bracket notation to numbered base pairs.")
 
         strands.append(counter)
         bp_x = [pos+1 for pos in bp_x[:]] #Shift so that 1st position is 1
@@ -327,17 +327,17 @@ if __name__ == "__main__":
     bp_y = test["mfe_basepairing_y"][0]
     strands = test["totalnt"]
     bracket_string = test.convert_numbered_pairs_to_bracket(strands,bp_x,bp_y)
-    print bracket_string
+    print(bracket_string)
 
     (strands,bp_x, bp_y) = test.convert_bracket_to_numbered_pairs(bracket_string)
 
-    print "Strands = ", strands
-    print "bp_x = ", bp_x
-    print "bp_y = ", bp_y
+    print("Strands = ", strands)
+    print("bp_x = ", bp_x)
+    print("bp_y = ", bp_y)
 
-    print test.energy(strands, bp_x, bp_y, dangles = "all")
+    print(test.energy(strands, bp_x, bp_y, dangles = "all"))
     test.subopt(strands,3.5,dangles = "all")
-    print test
+    print(test)
 
 #    print bracket_string
 #    print test.convert_numbered_pairs_to_bracket(strands,bp_x,bp_y)
