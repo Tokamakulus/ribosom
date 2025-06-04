@@ -91,7 +91,7 @@ class NuPACK(dict):
             except:
                 break
 
-        if debug == 1: print output.fromchild.read()
+        if debug == 1: print(output.fromchild.read())
 
         #Read output files
         self._read_output_cx()
@@ -141,7 +141,7 @@ class NuPACK(dict):
             except:
                 break
 
-        if debug == 1: print output.fromchild.read()
+        if debug == 1: print(output.fromchild.read())
 
         self._read_output_mfe()
         self._cleanup("mfe")
@@ -180,7 +180,7 @@ class NuPACK(dict):
             except:
                 break
 
-        if debug == 1: print output.fromchild.read()
+        if debug == 1: print(output.fromchild.read())
 
         self._read_output_subopt()
         self._cleanup("subopt")
@@ -415,7 +415,7 @@ class NuPACK(dict):
             counter=0
             counts = [[]]
             added=[]
-            for (complexes,i) in zip(AdditionalComplexes,range(len(AdditionalComplexes))):
+            for (complexes,i) in zip(AdditionalComplexes,list(range(len(AdditionalComplexes)))):
 
                 if len(complexes) <= MaxStrands: #Remove complexes if they have less than MaxStrands strands.
                     AdditionalComplexes.pop(i)
@@ -537,7 +537,7 @@ class NuPACK(dict):
 
 
         #Make sure that the ocx file has already been read.
-        if not (self.has_key("ordered_complexes") and self.has_key("ordered_permutations") and self.has_key("ordered_energies") and self.has_key("ordered_composition")):
+        if not ("ordered_complexes" in self and "ordered_permutations" in self and "ordered_energies" in self and "ordered_composition" in self):
             self._read_output_ocx(self,prefix)
 
         handle = open(self.prefix+".ocx-mfe", "rU")
@@ -727,14 +727,14 @@ class NuPACK(dict):
         args = "-p" #to PostScript file
         output = popen2.Popen3(cmd + " " + args + " " + inputfile,"r")
         output.wait()
-        if debug == 1: print output.fromchild.read()
+        if debug == 1: print(output.fromchild.read())
 
         inputfile = inputfile[0:len(inputfile)-2] + "ps"
 
         cmd = "ps2pdf" #Assumes it's on the path
         output = popen2.Popen3(cmd + " " + inputfile,"r")
         output.wait()
-        if debug == 1: print output.fromchild.read()
+        if debug == 1: print(output.fromchild.read())
 
         outputfile = inputfile[0:len(inputfile)-2] + "pdf"
 
@@ -795,7 +795,7 @@ class NuPACK(dict):
                 strand_ends.append(len(allseq))
 
         else:
-            for (num_strands,strand_id) in zip(composition,range(len(composition))):
+            for (num_strands,strand_id) in zip(composition,list(range(len(composition)))):
                 for j in range(num_strands):
                     strand_begins.append(len(allseq) + 1)
                     allseq = allseq + self["sequences"][strand_id]
@@ -822,7 +822,7 @@ class NuPACK(dict):
         for i in range(1,seq_len+1):
 
 
-            for (nt,pos) in zip(strand_begins,range(len(strand_begins))):
+            for (nt,pos) in zip(strand_begins,list(range(len(strand_begins)))):
                 if i >= nt:
                     strand_id = pos
 
@@ -919,7 +919,7 @@ if __name__ == "__main__":
     test = NuPACK(sequences,"rna1999")
     test.complexes(3,mfe = 1, ordered=1)
 
-    print test
+    print(test)
 
     strand_compositions = test["ordered_composition"]
     num_complexes = len(strand_compositions)
@@ -933,7 +933,7 @@ if __name__ == "__main__":
 
         output = output + "  dG (RT ln Q): " + str(test["ordered_energy"][counter]) + " kcal/mol"
         output = output + "  # Permutations: " + str(test["ordered_permutations"][counter])
-        print output
+        print(output)
         test.export_PDF(counter, name = "Complex #" + str(counter+1), filename = "Complex_" + str(counter) + ".pdf", program = "ordered")
 
     #Mfe

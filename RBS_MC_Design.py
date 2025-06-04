@@ -58,7 +58,7 @@ def weighted_choice(list_of_tuples):
 def Run_RBS_Calculator(pre_seq,post_seq,RBS,verbose=True):
     """Short cut function to run the RBS Calculator on a pre_sequence, CDS, and RBS."""
 
-    if vars().has_key('estimator'): del(estimator)
+    if 'estimator' in vars(): del(estimator)
 
     start_range = [len(pre_seq) + len(RBS) - 2, len(pre_seq) + len(RBS) + 2]
 
@@ -108,7 +108,7 @@ def Generate_Random_RBS(All_Random = False, Max_length = 20, Pre_length = 5, Pch
     optimal_spacing = RBS_Calculator.optimal_spacing
     offset = diff - begin
 
-    spacing = random.choice(range(max(0,offset + optimal_spacing - max_nonoptimal_spacing), offset + optimal_spacing + max_nonoptimal_spacing))
+    spacing = random.choice(list(range(max(0,offset + optimal_spacing - max_nonoptimal_spacing), offset + optimal_spacing + max_nonoptimal_spacing)))
 
     for i in range(spacing):
         RBS.append(random.choice(["A","T","G","C"]))
@@ -259,8 +259,8 @@ def MCmove_constrain_helical_loop(pre_seq,post_seq,RBS,estimator):
             #Choose random nucleotide in loop. Delete it.
 
             #Identify what part of the loop is in the RBS
-            RBS_range = sets.Set(range(RBS_begin+1,RBS_end+1))
-            loop_range = sets.Set(range(start_end[0]+1,start_end[1]))
+            RBS_range = sets.Set(list(range(RBS_begin+1,RBS_end+1)))
+            loop_range = sets.Set(list(range(start_end[0]+1,start_end[1])))
             change_range = list(RBS_range & loop_range) #Intersection
 
             #print "Loops in RBS: ", change_range
@@ -273,8 +273,8 @@ def MCmove_constrain_helical_loop(pre_seq,post_seq,RBS,estimator):
         elif loop_length < min_helical_loop:
             #Choose random position in loop and insert a nucleotide before it.
             #Identify what part of the loop is in the RBS
-            RBS_range = sets.Set(range(RBS_begin+1,RBS_end+1))
-            loop_range = sets.Set(range(start_end[0]+1,start_end[1]))
+            RBS_range = sets.Set(list(range(RBS_begin+1,RBS_end+1)))
+            loop_range = sets.Set(list(range(start_end[0]+1,start_end[1])))
             change_range = list(RBS_range & loop_range) #Intersection
 
             #print "Loops in RBS: ", change_range
@@ -363,7 +363,7 @@ def Monte_Carlo_Design(pre_seq, post_seq, RBS_init = None, TIR_target = None, dG
     if TIR_target is not None:
         dG_target = RBS_Calculator.RT_eff * (RBS_Calculator.logK - math.log(float(TIR_target)))
 
-    if verbose: print "dG_target = ", dG_target
+    if verbose: print("dG_target = ", dG_target)
 
     #Parameters
     max_init_energy = 10.0 #kcal/mol
@@ -375,10 +375,10 @@ def Monte_Carlo_Design(pre_seq, post_seq, RBS_init = None, TIR_target = None, dG
     weighted_moves = [('insert',0.10),('delete',0.10),('replace',0.80)]
 
     #Define the energy/cost function based on the dG_target and the other, optional targets
-    calc_energy = lambda (dG_total): abs(dG_total - dG_target)
+    calc_energy = lambda dG_total: abs(dG_total - dG_target)
 
     #If RBS_Init is given, use it. Otherwise, randomly choose one that is a decent starting point.
-    if verbose: print "Determining Initial RBS"
+    if verbose: print("Determining Initial RBS")
 
     if RBS_init is None:
         (RBS,estimator) = GetInitialRBS(pre_seq,post_seq,dG_target)
@@ -395,7 +395,7 @@ def Monte_Carlo_Design(pre_seq, post_seq, RBS_init = None, TIR_target = None, dG
     dG_total = estimator.dG_total_list[0]
     energy = calc_energy(dG_total)
 
-    if verbose: print "Initial RBS = ", RBS, " Energy = ", energy
+    if verbose: print("Initial RBS = ", RBS, " Energy = ", energy)
     if verbose: estimator.print_dG(estimator.infinity)
 
     while energy > tol and counter < MaxIter:
@@ -407,7 +407,7 @@ def Monte_Carlo_Design(pre_seq, post_seq, RBS_init = None, TIR_target = None, dG
             move = weighted_choice(weighted_moves)
 
             RBS_new = ''
-            if verbose: print "Move #", counter, ": ", move
+            if verbose: print("Move #", counter, ": ", move)
             if move == 'insert':
 
                 pos = int(random.uniform(0.0,1.0) * len(RBS))
@@ -436,14 +436,14 @@ def Monte_Carlo_Design(pre_seq, post_seq, RBS_init = None, TIR_target = None, dG
             if calc_constraints(RBS_new,estimator):
                 energy_new = infinity
 
-            if verbose: print "New energy = ", energy_new
+            if verbose: print("New energy = ", energy_new)
 
             if energy_new < energy:
                 #Accept move immediately
                 RBS = RBS_new
                 energy = energy_new
                 accepted = True
-                if verbose: print "Move immediately accepted"
+                if verbose: print("Move immediately accepted")
             else:
 
                 ddE = (energy - energy_new)
@@ -456,11 +456,11 @@ def Monte_Carlo_Design(pre_seq, post_seq, RBS_init = None, TIR_target = None, dG
                     energy = energy_new
                     accepts += 1
                     accepted = True
-                    if verbose: print "Move conditionally accepted"
+                    if verbose: print("Move conditionally accepted")
                 else:
                     #Reject move
                     rejects += 1
-                    if verbose: print "Move rejected"
+                    if verbose: print("Move rejected")
 
             if accepted and verbose: estimator.print_dG(estimator.infinity)
 
@@ -474,17 +474,17 @@ def Monte_Carlo_Design(pre_seq, post_seq, RBS_init = None, TIR_target = None, dG
                     RT = RT / 2.0
                     accepts = 0
                     rejects = 0
-                    if verbose: print "Accepting too many conditional moves, reducing temperature"
+                    if verbose: print("Accepting too many conditional moves, reducing temperature")
 
                 if ratio < annealing_accept_ratios[0]:
                     #Too many rejects, increase RT
                     RT = RT * 2.0
                     accepts = 0
                     rejects = 0
-                    if verbose: print "Rejecting too many conditional moves, increasing temperature"
+                    if verbose: print("Rejecting too many conditional moves, increasing temperature")
 
         except KeyboardInterrupt:
-            if verbose: print "Calculating Final State"
+            if verbose: print("Calculating Final State")
             estimator = Run_RBS_Calculator(pre_seq,post_seq,RBS,verbose=False)
 
             dG_total = estimator.dG_total_list[0]
@@ -492,7 +492,7 @@ def Monte_Carlo_Design(pre_seq, post_seq, RBS_init = None, TIR_target = None, dG
 
     if verbose: estimator.print_dG(estimator.infinity)
 
-    if verbose: print "Total number of RBS Evaluations: ", num_rbs_calculations
+    if verbose: print("Total number of RBS Evaluations: ", num_rbs_calculations)
 
     if TIR_target is not None:
 
@@ -508,7 +508,7 @@ def MC_Design_from_file(handle, output, dG_target, verbose = True, **kvars):
     from Bio import SeqIO
 
     #Set Defaults
-    if not "kinetic_score_max" in kvars.keys(): kvars["kinetic_score_max"] = 0.500
+    if not "kinetic_score_max" in list(kvars.keys()): kvars["kinetic_score_max"] = 0.500
 
     records = SeqIO.parse(handle,"fasta")
 
@@ -528,7 +528,7 @@ def MC_Design_from_file(handle, output, dG_target, verbose = True, **kvars):
         [dG_total, RBS, estimator] = Monte_Carlo_Design(pre_seq, post_seq, dG_target[counter/2-1], verbose,kvars)
 
         if verbose: estimator.print_dG(estimator.infinity)
-        if verbose: print "Final RBS = ", RBS
+        if verbose: print("Final RBS = ", RBS)
 
         estimator.save_data(output, First)
         if First:
@@ -549,9 +549,9 @@ if __name__ == "__main__":
 
     (dG_total, RBS, estimator, iterations) = Monte_Carlo_Design(pre_RBS, post_RBS, RBS_init = None, dG_target = dG_target, MaxIter = 10000, verbose = True)
 
-    print "Finished"
-    print "dG_total = ", dG_total
-    print "RBS = ", RBS
-    print "# iterations = ", iterations
+    print("Finished")
+    print("dG_total = ", dG_total)
+    print("RBS = ", RBS)
+    print("# iterations = ", iterations)
 
 

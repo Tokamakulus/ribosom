@@ -97,7 +97,7 @@ if __name__ == "__main__":
     time_elapsed = end - start
 
     if success:
-        print output
+        print(output)
     else:
-        print "Error"
-        print output
+        print("Error")
+        print(output)
